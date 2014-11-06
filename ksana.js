@@ -4,6 +4,7 @@ jsonp_handler({
  "title": "nanchuan",
  "date": "2014-11-06T07:31:15.343Z",
  "description": "",
+ "baseurl":"http://ya.ksana.tw/nanchuan/",
  "files": [
   "index.html",
   "build.js",
