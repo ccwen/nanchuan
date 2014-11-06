@@ -14,7 +14,7 @@
 
      對讀。   
 
-*/  
+*/   
 var require_kdb=[{ 
   filename:"nanchuan.kdb"  , url:"http://ya.ksana.tw/kdb/nanchuan.kdb" , desc:"nanchuan"
 }];  
@@ -24,15 +24,21 @@ var kde=Require('ksana-document').kde;  // Ksana Database Engine
 var kse=Require('ksana-document').kse; // Ksana Search Engine (run at client side)
 var maintext=Require("maintext");
 var stacktoc=Require("stacktoc");
+var showtext=Require("showtext");
 
 var resultlist=React.createClass({  //should search result
-  show:function() {
+  show:function() {  
     return this.props.res.excerpt.map(function(r,i){ // excerpt is an array 
-      return <div>
-      <span>{r.pagename}</span>
-      <span dangerouslySetInnerHTML={{__html:r.text}}></span>
+      if (! r) return null;
+      return <div data-vpos={r.hits[0][0]}>
+      <a href="#" onClick={this.gotopage} className="sourcepage">{r.pagename}</a>)
+      <span className="resultitem" dangerouslySetInnerHTML={{__html:r.text}}></span>
       </div>
-    })
+    },this);
+  },
+  gotopage:function(e) {
+    var vpos=parseInt(e.target.parentNode.dataset['vpos']);
+    this.props.gotopage(vpos);
   },
   render:function() { 
     if (this.props.res) return <div>{this.show()}</div>
@@ -90,7 +96,40 @@ var main = React.createClass({
 
     return out; 
   },     
+  showPage:function(f,p,hideResultlist) {
+    kse.highlightPage(this.state.db,f,p,{q:this.state.q},function(data){
+      this.setState({bodytext:data});
+      if (hideResultlist) this.setState({res:{excerpt:[]}});
+    });
+  },
+  gotopage:function(vpos) {
+    var res=kse.vpos2filepage(this.state.db,vpos);
+    this.showPage(res.file,res.page);
+  },
+  nextpage:function() {
+    var page=this.state.bodytext.page+1;
+    this.showPage(this.state.bodytext.file,page);
+  },
+  prevpage:function() {
+    var page=this.state.bodytext.page-1;
+    if (page<0) page=0;
+    this.showPage(this.state.bodytext.file,page);
+  },
+  setPage:function(newpagename,file) {
+    file=file||this.state.bodytext.file;
+    var pagenames=this.state.db.getFilePageNames(file);
+    var p=pagenames.indexOf(newpagename);
+    if (p>-1) this.showPage(file,p);
+  },
+  filepage2vpos:function() {
+    var offsets=this.state.db.getFilePageOffsets(this.state.bodytext.file);
+    return offsets[this.state.bodytext.page];
+  },
 
+  showText:function(n) {
+    var res=kse.vpos2filepage(this.state.db,this.state.toc[n].voff);
+    this.showPage(res.file,res.page,true);
+  },
   onReady:function(usage,quota) {
     if (!this.state.db) kde.open("nanchuan",function(db){
         this.setState({db:db});
@@ -127,16 +166,29 @@ var main = React.createClass({
   render: function() {  //main render routine
     if (!this.state.quota) { // install required db
         return this.openFileinstaller(true);
-    } else { 
-    return (
+    } else {
+      var text="";
+      var pagename="";
+      if (this.state.bodytext) {
+        text=this.state.bodytext.text;
+        pagename=this.state.bodytext.pagename;
+      }
+
+     return (
       <div className="main">
-          <stacktoc 
-            showExcerpt={this.showExcerpt} hits={this.state.res.rawresult} 
-            data={this.state.toc}/>
-        {this.state.dialog?this.openFileinstaller():null}
         {this.renderinputs()}            
+          <stacktoc showText={this.showText}  
+            showExcerpt={this.showExcerpt} hits={this.state.res.rawresult} 
+            data={this.state.toc} goVoff={this.state.goVoff} />
         <span>{this.state.msg}</span>  
-        <resultlist res={this.state.res}/>
+        <resultlist gotopage={this.gotopage} res={this.state.res}/>
+
+        <showtext pagename={pagename} text={text} 
+             nextpage={this.nextpage} 
+             setpage={this.setPage}
+             prevpage={this.prevpage} 
+             syncToc={this.syncToc}/>
+
       </div>
     );
   }

@@ -14,7 +14,8 @@
     "ksanaforge/stacktoc": "*",
     "nanchuan/main": "*",
     "nanchuan/comp1": "*",
-    "nanchuan/maintext": "*"
+    "nanchuan/maintext": "*",
+    "nanchuan/showtext": "*"
   },
   "development": {},
   "paths": [
