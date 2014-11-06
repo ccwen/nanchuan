@@ -33,7 +33,7 @@ var do_mulu=function(text,tag,attributes,status) {
 	if (attributes["level"]) {
 		//console.log(text,attributes.level);
 		return [
-			{path:["mulu_depth"], value:attributes.level  }
+			{path:["mulu_depth"], value:parseInt(attributes.level) }
 			,{path:["mulu"], value:text  }
 			,{path:["mulu_voff"], value: status.vpos }
 		]

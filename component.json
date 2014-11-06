@@ -11,8 +11,10 @@
     "ksanaforge/fileinstaller": "*",
     "ksanaforge/checkbrowser": "*",
     "ksanaforge/htmlfs": "*",
+    "ksanaforge/stacktoc": "*",
     "nanchuan/main": "*",
-    "nanchuan/comp1": "*"
+    "nanchuan/comp1": "*",
+    "nanchuan/maintext": "*"
   },
   "development": {},
   "paths": [
