@@ -1,6 +1,8 @@
 /*
 TODO , normalize all traditional and variants to simplified Chinese
 */
+
+
 var nanchuan="/CBReader/XML_n/N*/*.xml";//T01n0001_001
 var tei=require("ksana-document").tei;
 var juanstart=0;
@@ -28,17 +30,31 @@ var do_juan=function(text,tag,attributes,status) {
 	}
 	return null;
 }
+//6131
+//14576
+var levelcount=0;
+var extramulu={1:[1,"律藏"],6132:[1,"經藏"],14576:[1,"論藏"]};
 
 var do_mulu=function(text,tag,attributes,status) {
-	if (attributes["level"]) {
+	var res=[];
+	if (!attributes["level"]) return null;
 		//console.log(text,attributes.level);
-		return [
-			{path:["mulu_depth"], value:parseInt(attributes.level) }
-			,{path:["mulu"], value:text  }
-			,{path:["mulu_voff"], value: status.vpos }
-		]
-	}
-	return null;
+	var level=parseInt(attributes.level);
+	levelcount++;
+
+	var extra=extramulu[levelcount];
+	if (extra) {
+		res=[{path:["mulu_depth"], value:extra[0] }
+		,{path:["mulu"], value:extra[1]  }
+		,{path:["mulu_voff"], value: status.vpos }];		
+	}		
+
+	res=res.concat([
+		{path:["mulu_depth"], value:level+1 }
+		,{path:["mulu"], value:text  }
+		,{path:["mulu_voff"], value: status.vpos }
+	]);
+	return res;
 }
 
 var captureTags={
@@ -59,7 +75,7 @@ var warning=function() {
 }
 
 var onFile=function(fn) {
-	process.stdout.write("indexing "+fn+"\033[0G");
+//	process.stdout.write("indexing "+fn+"\033[0G");
 }
 var setupHandlers=function() {
 	this.addHandler("cb:div/p/note", require("./note"));
