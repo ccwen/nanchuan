@@ -19,14 +19,13 @@ var require_kdb=[{
   filename:"nanchuan.kdb"  , url:"http://ya.ksana.tw/kdb/nanchuan.kdb" , desc:"nanchuan"
 }];  
 var bootstrap=Require("bootstrap"); 
-var fileinstaller=Require("fileinstaller");
+var Fileinstaller=Require("fileinstaller");
 var kde=Require('ksana-document').kde;  // Ksana Database Engine
 var kse=Require('ksana-document').kse; // Ksana Search Engine (run at client side)
-var maintext=Require("maintext");
-var stacktoc=Require("stacktoc");
-var showtext=Require("showtext");
+var Stacktoc=Require("stacktoc");
+var Showtext=Require("showtext");
 
-var resultlist=React.createClass({  //should search result
+var Resultlist=React.createClass({  //should search result
   show:function() {  
     return this.props.res.excerpt.map(function(r,i){ // excerpt is an array 
       if (! r) return null;
@@ -46,7 +45,7 @@ var resultlist=React.createClass({  //should search result
   } 
 });        
 
-var main = React.createClass({
+var Main = React.createClass({
   componentDidMount:function() {
 
   }, 
@@ -149,7 +148,7 @@ var main = React.createClass({
     if (window.location.origin.indexOf("http://127.0.0.1")==0) {
       require_kdb[0].url=window.location.origin+window.location.pathname+"nanchuan.kdb";
     }
-    return <fileinstaller quota="512M" autoclose={autoclose} needed={require_kdb} 
+    return <Fileinstaller quota="512M" autoclose={autoclose} needed={require_kdb} 
                      onReady={this.onReady}/>
   },
   fidialog:function() {
@@ -177,13 +176,13 @@ var main = React.createClass({
      return (
       <div className="main">
         {this.renderinputs()}            
-          <stacktoc showText={this.showText}  
+          <Stacktoc showText={this.showText}  
             showExcerpt={this.showExcerpt} hits={this.state.res.rawresult} 
             data={this.state.toc} goVoff={this.state.goVoff} />
         <span>{this.state.msg}</span>  
-        <resultlist gotopage={this.gotopage} res={this.state.res}/>
+        <Resultlist gotopage={this.gotopage} res={this.state.res}/>
 
-        <showtext pagename={pagename} text={text} 
+        <Showtext pagename={pagename} text={text} 
              nextpage={this.nextpage} 
              setpage={this.setPage}
              prevpage={this.prevpage} 
@@ -194,4 +193,4 @@ var main = React.createClass({
   }
   } 
 });
-module.exports=main; //common JS
+module.exports=Main; //common JS

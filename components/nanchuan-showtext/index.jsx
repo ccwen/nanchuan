@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 
 //var othercomponent=Require("other"); 
-var controls = React.createClass({
+var Controls = React.createClass({
   getInitialState: function() {
     return {pagename:this.props.pagename};
   },
@@ -27,7 +27,7 @@ var controls = React.createClass({
       </div>
   }  
 });
-var showtext = React.createClass({
+var Showtext = React.createClass({
   getInitialState: function() {
     return {bar: "world"};
   },
@@ -35,7 +35,7 @@ var showtext = React.createClass({
     var pn=this.props.pagename;
     return (
       <div>
-        <controls pagename={this.props.pagename} next={this.props.nextpage} 
+        <Controls pagename={this.props.pagename} next={this.props.nextpage} 
         prev={this.props.prevpage} setpage={this.props.setpage}
         syncToc={this.props.syncToc}/>
        
@@ -44,4 +44,4 @@ var showtext = React.createClass({
     );
   }
 });
-module.exports=showtext;
+module.exports=Showtext;
