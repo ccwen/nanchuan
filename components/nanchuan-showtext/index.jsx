@@ -33,7 +33,7 @@ var Showtext = React.createClass({
   },
   render: function() {
     var pn=this.props.pagename;
-    return (
+    return ( 
       <div>
         <Controls pagename={this.props.pagename} next={this.props.nextpage} 
         prev={this.props.prevpage} setpage={this.props.setpage}

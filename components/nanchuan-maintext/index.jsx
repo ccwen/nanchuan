@@ -7,7 +7,7 @@ var maintext = React.createClass({
   getInitialState: function() {
     return {};
   },
-  render: function() {
+  render: function() { 
     return (
       <div>
         Rendering maintext

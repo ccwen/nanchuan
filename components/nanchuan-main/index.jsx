@@ -24,7 +24,7 @@ var kde=Require('ksana-document').kde;  // Ksana Database Engine
 var kse=Require('ksana-document').kse; // Ksana Search Engine (run at client side)
 var Stacktoc=Require("stacktoc");
 var Showtext=Require("showtext");
-
+var Swipe=Require("swipe");
 var Resultlist=React.createClass({  //should search result
   show:function() {  
     return this.props.res.excerpt.map(function(r,i){ // excerpt is an array 
@@ -58,7 +58,7 @@ var Main = React.createClass({
     var tofind=this.refs.tofind.getDOMNode().value;
     if (e) tofind=e.target.innerHTML;
     if (tofind=="GO") tofind=this.refs.tofind.getDOMNode().value;
-    this.setState({msg:"Searching"});
+    this.setState({q:tofind,msg:"Searching"});
     var that=this;
     setTimeout(function(){
       kse.search(that.state.db,tofind,{range:{start:start,maxhit:20}},function(data){ //call search engine
@@ -74,13 +74,13 @@ var Main = React.createClass({
     if (this.state.db) {
       return (    
         //"則為正"  "為正觀" both ok
-        <div> 
-        <h1 className="logo">南傳大藏經 2014 Search Engine</h1>
+        <div > 
         <div className="centered inputs"><input onKeyPress={this.keypress} ref="tofind" defaultValue="正觀"></input>
         <button ref="btnsearch" onClick={this.dosearch}>GO</button>
         <a href="#" onClick={this.dosearch}>正知</a> |
         <a href="#" onClick={this.dosearch}>給孤獨園</a> 
         </div>
+        <Resultlist gotopage={this.gotopage} res={this.state.res}/>
         </div>
         )          
     } else {
@@ -104,6 +104,7 @@ var Main = React.createClass({
   gotopage:function(vpos) {
     var res=kse.vpos2filepage(this.state.db,vpos);
     this.showPage(res.file,res.page);
+    this.slideText();
   },
   nextpage:function() {
     var page=this.state.bodytext.page+1;
@@ -124,10 +125,10 @@ var Main = React.createClass({
     var offsets=this.state.db.getFilePageOffsets(this.state.bodytext.file);
     return offsets[this.state.bodytext.page];
   },
-
   showText:function(n) {
     var res=kse.vpos2filepage(this.state.db,this.state.toc[n].voff);
-    this.showPage(res.file,res.page,true);
+    this.showPage(res.file,res.page);
+    this.slideText();
   },
   onReady:function(usage,quota) {
     if (!this.state.db) kde.open("nanchuan",function(db){
@@ -157,11 +158,55 @@ var Main = React.createClass({
   showExcerpt:function(n) {
     var voff=this.state.toc[n].voff;
     this.dosearch(null,null,voff);
+    this.slideSearch();
   },
   syncToc:function() {
     this.setState({goVoff:this.filepage2vpos()});
+    this.slideToc();
   },
+  slideSearch:function() {
+    this.refs.Swipe.swipe.slide(2);
+  },
+  slideToc:function() {
+    this.refs.Swipe.swipe.slide(0);
+  },
+  slideText:function() {
+    this.refs.Swipe.swipe.slide(1);
+  },
+  onSwipe:function(index,slide,target) {
 
+  },
+  tryTocNode:function(target){
+    while (target && target.dataset && typeof target.dataset.n=="undefined") {
+      target=target.parentNode;
+    }
+    if (target && target.dataset&&target.dataset.n) {
+      var voff=this.state.toc[target.dataset.n].voff;
+      this.gotopage(voff);   
+      return true;
+    }
+  },
+  tryResultItem:function(target) {
+    while (target && target.dataset && typeof target.dataset.vpos=="undefined") {
+      target=target.parentNode;
+    }
+    if (target && target.dataset&&target.dataset.vpos) {
+      this.gotopage(parseInt(target.dataset.vpos));   
+      return true;
+    }
+  },
+  onSwipeEnd:function(index,slide,target) {
+    if (!this.tryResultItem(target)) this.tryTocNode(target);
+  },
+  renderSlideButtons:function() {
+    if (ksana.platform!="ios" && ksana.platform!="android") {
+      return <div>
+        <button onClick={this.slideToc}>Toc</button>
+        <button onClick={this.slideText}>Text</button>
+        <button onClick={this.slideSearch}>Search</button>
+      </div>
+    }
+  },
   render: function() {  //main render routine
     if (!this.state.quota) { // install required db
         return this.openFileinstaller(true);
@@ -175,22 +220,33 @@ var Main = React.createClass({
 
      return (
       <div className="main">
-        {this.renderinputs()}            
+        {this.renderSlideButtons()}
+        <Swipe ref="Swipe" continuous={false} transitionEnd={this.onSwipeEnd} callback={this.onSwipe}>
+        <div>
           <Stacktoc showText={this.showText}  
             showExcerpt={this.showExcerpt} hits={this.state.res.rawresult} 
-            data={this.state.toc} goVoff={this.state.goVoff} />
-        <span>{this.state.msg}</span>  
-        <Resultlist gotopage={this.gotopage} res={this.state.res}/>
-
-        <Showtext pagename={pagename} text={text} 
+            data={this.state.toc} goVoff={this.state.goVoff} 
+            showTextOnLeafNodeOnly={true} />
+        </div>
+        <div>                 
+          <Showtext pagename={pagename} text={text} 
              nextpage={this.nextpage} 
              setpage={this.setPage}
              prevpage={this.prevpage} 
              syncToc={this.syncToc}/>
-
+        </div>
+        <div>
+            {this.renderinputs()} 
+        </div>
+        </Swipe>
       </div>
     );
   }
   } 
 });
 module.exports=Main; //common JS
+/*
+
+        
+        
+*/

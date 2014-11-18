@@ -15,7 +15,8 @@
     "nanchuan/main": "*",
     "nanchuan/comp1": "*",
     "nanchuan/maintext": "*",
-    "nanchuan/showtext": "*"
+    "nanchuan/showtext": "*",
+    "ksanaforge/swipe": "*"
   },
   "development": {},
   "paths": [
