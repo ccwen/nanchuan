@@ -1,2 +1,8 @@
 .showtext {}
 .bodytext{font-size:125%;}
+
+@media 
+(-webkit-min-device-pixel-ratio: 2), 
+(min-resolution: 192dpi) { 
+   .bodytext{font-size:200%;}
+}

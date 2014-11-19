@@ -250,20 +250,20 @@ var Main = React.createClass({
         <Swipe ref="Swipe" continuous={true} 
                transitionEnd={this.onTransitionEnd} 
                swipeStart={this.onSwipeStart} swipeEnd={this.onSwipeEnd}>
-        <div>
+        <div className="swipediv">
           <Stacktoc showText={this.showText}  
             showExcerpt={this.showExcerpt} hits={this.state.res.rawresult} 
             data={this.state.toc} goVoff={this.state.goVoff} 
             showTextOnLeafNodeOnly={true} />
         </div>
-        <div>                 
+        <div className="swipediv">                 
           <Showtext pagename={pagename} text={text} 
              nextpage={this.nextpage} 
              setpage={this.setPage}
              prevpage={this.prevpage} 
              syncToc={this.syncToc}/>
         </div>
-        <div>
+        <div className="swipediv">
             {this.renderinputs()} 
         </div>
         </Swipe>
