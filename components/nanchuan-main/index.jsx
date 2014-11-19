@@ -75,7 +75,7 @@ var Main = React.createClass({
       return (    
         //"則為正"  "為正觀" both ok
         <div > 
-        <div className="centered inputs"><input onKeyPress={this.keypress} ref="tofind" defaultValue="正觀"></input>
+        <div className="centered inputs"><input size="8" onKeyPress={this.keypress} ref="tofind" defaultValue="正觀"></input>
         <button ref="btnsearch" onClick={this.dosearch}>GO</button>
         <a href="#" onClick={this.dosearch}>正知</a> |
         <a href="#" onClick={this.dosearch}>給孤獨園</a> 
@@ -160,8 +160,8 @@ var Main = React.createClass({
     this.dosearch(null,null,voff);
     this.slideSearch();
   },
-  syncToc:function() {
-    this.setState({goVoff:this.filepage2vpos()});
+  syncToc:function(voff) {
+    this.setState({goVoff:voff||this.filepage2vpos()});
     this.slideToc();
   },
   slideSearch:function() {
@@ -173,30 +173,56 @@ var Main = React.createClass({
   slideText:function() {
     this.refs.Swipe.swipe.slide(1);
   },
-  onSwipe:function(index,slide,target) {
-
+  onSwipeStart:function(target) {
+    if (target && this.swipable(target)) {
+      this.targetbg=target.style.background;
+      target.style.background="yellow";
+    }
   },
-  tryTocNode:function(target){
+  swipable:function(target) {
+    while (target && target.dataset && 
+      typeof target.dataset.n=="undefined" && typeof target.dataset.vpos=="undefined" ) {
+      target=target.parentNode;
+    }
+    if (target && target.dataset) return true;
+  },
+  tryTocNode:function(index,target){
     while (target && target.dataset && typeof target.dataset.n=="undefined") {
       target=target.parentNode;
     }
     if (target && target.dataset&&target.dataset.n) {
-      var voff=this.state.toc[target.dataset.n].voff;
-      this.gotopage(voff);   
+      if (index==2) {//filter search result
+        this.showExcerpt(target.dataset.n);
+      } else {
+        var voff=this.state.toc[target.dataset.n].voff;
+        this.gotopage(voff);  
+      }    
       return true;
     }
   },
-  tryResultItem:function(target) {
+  tryResultItem:function(index,target) {
     while (target && target.dataset && typeof target.dataset.vpos=="undefined") {
       target=target.parentNode;
     }
     if (target && target.dataset&&target.dataset.vpos) {
-      this.gotopage(parseInt(target.dataset.vpos));   
+      var vpos=parseInt(target.dataset.vpos);
+      if (index==1) {
+        this.gotopage(vpos);
+      } else {
+       // this.syncToc(vpos);
+      }
       return true;
     }
   },
-  onSwipeEnd:function(index,slide,target) {
-    if (!this.tryResultItem(target)) this.tryTocNode(target);
+  onSwipeEnd:function(target) {
+    if (target && this.targetbg!=null) {
+      target.style.background=this.targetbg;
+      this.targetbg=null;
+    }    
+  },
+  onTransitionEnd:function(index,slide,target) {
+    console.log(index);
+    if (!this.tryResultItem(index,target)) this.tryTocNode(index,target);
   },
   renderSlideButtons:function() {
     if (ksana.platform!="ios" && ksana.platform!="android") {
@@ -221,7 +247,9 @@ var Main = React.createClass({
      return (
       <div className="main">
         {this.renderSlideButtons()}
-        <Swipe ref="Swipe" continuous={false} transitionEnd={this.onSwipeEnd} callback={this.onSwipe}>
+        <Swipe ref="Swipe" continuous={true} 
+               transitionEnd={this.onTransitionEnd} 
+               swipeStart={this.onSwipeStart} swipeEnd={this.onSwipeEnd}>
         <div>
           <Stacktoc showText={this.showText}  
             showExcerpt={this.showExcerpt} hits={this.state.res.rawresult} 

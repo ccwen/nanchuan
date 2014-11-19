@@ -19,9 +19,9 @@ var Controls = React.createClass({
     this.props.syncToc();
   },
   render: function() {   
-   return <div>
+   return <div className="inputs">
       <button onClick={this.props.prev}>←</button>
-       <input type="text" ref="pagename" onKeyUp={this.updateValue}></input>
+       <input size="8" type="text" ref="pagename" onKeyUp={this.updateValue}></input>
       <button onClick={this.props.next}>→</button>
       <button onClick={this.gotoToc}>Toc</button>
       </div>
