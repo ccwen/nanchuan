@@ -1,8 +1,9 @@
 .showtext {}
-.bodytext{font-size:125%;}
+.bodytext{
+	font-size:125%;
+}
 
 @media 
-(-webkit-min-device-pixel-ratio: 2), 
-(min-resolution: 192dpi) { 
+(-webkit-min-device-pixel-ratio: 2) and (min-width: 1500px){ 
    .bodytext{font-size:200%;}
 }

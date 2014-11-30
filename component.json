@@ -13,10 +13,12 @@
     "ksanaforge/htmlfs": "*",
     "ksanaforge/stacktoc": "*",
     "nanchuan/main": "*",
-    "nanchuan/comp1": "*",
-    "nanchuan/maintext": "*",
     "nanchuan/showtext": "*",
-    "ksanaforge/swipe": "*"
+    "ksanaforge/swipe": "*",
+    "ksanaforge/defaultmain":"*",
+    "ksanaforge/defaultresultlist":"*",
+    "ksanaforge/defaultshowtext":"*"
+
   },
   "development": {},
   "paths": [

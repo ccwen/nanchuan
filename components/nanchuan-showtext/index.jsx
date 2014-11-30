@@ -27,6 +27,9 @@ var Controls = React.createClass({
       </div>
   }  
 });
+var addbr=function(t) {
+  return t.split("\n").map(function(line){return line+" <br/>"}).join("\n");
+};
 var Showtext = React.createClass({
   getInitialState: function() {
     return {bar: "world"};
@@ -39,7 +42,7 @@ var Showtext = React.createClass({
         prev={this.props.prevpage} setpage={this.props.setpage}
         syncToc={this.props.syncToc}/>
        
-        <div className="bodytext" dangerouslySetInnerHTML={{__html: this.props.text}} />
+        <div className="bodytext" dangerouslySetInnerHTML={{__html:addbr(this.props.text||"")}} />
       </div>
     );
   }
